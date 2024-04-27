@@ -1,0 +1,47 @@
+---
+title: "My Storyboard at DACSS - frames"
+#bibliography: testVisual.bib
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard) # always
+```
+
+## Intro {.sidebar}
+
+Preparing the dashboard based on the instructions given at @magallanes_reyes_data_2022, and @aden-buie_flexdashboard_2023.
+
+
+
+### I know this is not nice, but wait till I finish the course
+
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+
+
+### I am doing my best but still much to learn
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+
+### This might be the worst scatter plot, but...
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+### Making this map was easy, but still hard to understand
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+### References

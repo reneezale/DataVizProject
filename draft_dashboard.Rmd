@@ -1,0 +1,46 @@
+---
+title: "My Dashbord at DACSS"
+#bibliography: testVisual.bib
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard) # always
+```
+
+## Intro {.sidebar}
+
+Preparing the dashboard based on the instructions given at @magallanes_reyes_data_2022, and @sievert_flexdashboard_2022.
+
+### References
+<div id="refs"></div>
+
+## Column {data-width="450"}
+
+### Worst barplot <!-- a title for plot -->
+
+```{r}
+readRDS("VaxStatusBarChart.rds")
+```
+
+### Worst histogram 
+
+```{r}
+readRDS("VaxAgeHistFinal.rds")
+```
+
+## Column {data-width="550"}
+
+### Worst scatterplot
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+### Worst map
+
+```{r}
+readRDS("StackedBar2.rds")
+```

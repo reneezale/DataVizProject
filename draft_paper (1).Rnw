@@ -1,0 +1,92 @@
+\documentclass[a4paper, 12pt]{article}
+\title{This is my work in R}
+\author{ MyFirstName MyLastName\\OrganizationName\\
+         City, ZipCope, \underline{Country}\\
+        \url{username@the.rest}}
+\date{\today}  %% manually: \date{Month day, year} 
+\usepackage[natbibapa]{apacite} %% for bibliography
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle 
+\begin{abstract}
+This is an example of an abstract in a paper. This is an example of an abstract in a paper. This is an example of an abstract in a paper. This is an example of an abstract in a paper.This is an example of an abstract in a paper.This is an example of an abstract in a paper.
+\end{abstract}
+
+\newpage
+
+\section{Exploring Data}\label{explo-data} % label for crossref
+
+\subsection{Univariate plots}
+%footnote coming
+This is a section. I will use a footnot now \footnote{This is a footnote.}. I will soon use cross-ref.I will soon use cross-ref.I will soon use cross-ref.I will soon use cross-ref. I will soon use cross-ref. I will soon use cross-ref.I will soon use cross-ref.I will soon use cross-ref.I will soon use cross-ref.I will soon use cross-ref. I will soon use cross-ref. I will soon use cross-ref.
+
+
+%cross-ref coming
+I will soon use cross-ref.I will soon use cross-ref: as we see in Figure \ref{fig:theDeli_1}, thta is an ugly barplot.
+
+\begin{figure}[h]
+\centering
+<<theDeli_1, fig=TRUE, echo=FALSE>>=
+readRDS("del1Draft.rds")
+@
+\caption{Worst barplot}  %title
+\label{fig:theDeli_1} % for cross-ref
+\end{figure}
+
+But, in Figure \ref{fig:theDeli_2} you may see something even worse.
+
+\begin{figure}[h]
+\centering
+<<theDeli_2, fig=TRUE, echo=FALSE>>=
+readRDS("del2Draft.rds")
+@
+\caption{Worst histogram}  %title
+\label{fig:theDeli_2} % for cross-ref
+\end{figure}
+I am doing my best, as recommended in \citet{magallanes_reyes_data_2022}, and \citet{leisch_sweave_2024}. 
+
+\subsection{Bivariate plots}
+
+I only have this ugly one:
+
+\begin{figure}[h]
+\centering
+<<theDeli_3, fig=TRUE, echo=FALSE>>=
+readRDS("del3Draft.rds")
+@
+\caption{Worst histogram}  %title
+\label{fig:theDeli_3} % for cross-ref
+\end{figure}
+
+I am doing my best, as recommended in \citet{magallanes_reyes_data_2022}, and \citet{leisch_sweave_2024}.
+
+
+
+\subsection{Complex plots}
+
+I just prepare a map. See it below.
+
+\begin{figure}[h]
+\centering
+<<theDeli_4, fig=TRUE, echo=FALSE>>=
+readRDS("del4Draft.rds")
+@
+\caption{Worst histogram}  %title
+\label{fig:theDeli_4} % for cross-ref
+\end{figure}
+
+
+\section{Conclusion}
+
+Still so much to learn. But, I am doing my best, as recommended in \citet{magallanes_reyes_data_2022}, and \citet{leisch_sweave_2024}. 
+
+
+
+%%%%% adding bibliography
+\bibliographystyle{apacite} %%style
+%\renewcommand{\refname}{Bibliography}
+\bibliography{testVisual} %% filename
+\end{document} %% nothing after here
+

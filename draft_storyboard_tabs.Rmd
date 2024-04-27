@@ -1,0 +1,47 @@
+---
+title: "My Storyboard at DACSS - tabs"
+#bibliography: testVisual.bib
+output: 
+  flexdashboard::flex_dashboard
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard) # always
+```
+
+## Sidebar {.sidebar}
+
+
+Preparing the dashboard based on the instructions given at @magallanes_reyes_data_2022, and @aden-buie_flexdashboard_2023.
+
+## Column {.tabset .tabset-fade}
+
+
+### Worst barplot
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+
+### Worst histogram
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+### Worst scatterplot
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+
+### Worst map
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+
+### References 
