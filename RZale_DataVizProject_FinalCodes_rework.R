@@ -214,9 +214,61 @@ stackedbase
 saveRDS(stackedbase, file = "StackedBar2.rds")
 
 
-############Region Attempt##################
+############Region From GitHub##################
 library(sf)
-region_map=sf::read_sf("cb_2022_us_region_500k.shp")
+
+LinkGithub <- "https://github.com/reneezale/DataVizProject/raw/main/cb_2022_us_region_500k.json"
+GitRegion_map = sf::read_sf(LinkGithub)
+head(GitRegion_map)
+
+head(mydata)
+
+mydata4map <- mutate(mydata, SimpleVaxStatus_Num = recode(SimpleVaxStatus, 
+                                                          `No plans` = "1", 
+                                                          `Im not sure` = "2",
+                                                          `Planning to` = "3",
+                                                          `Received` = "4"))
+
+mydata4map$SimpleVaxStatus_Num <- as.numeric(mydata4map$SimpleVaxStatus_Num)
+
+head(mydata4map)
+
+mydata4map %>%
+  group_by(Region, State) %>%
+  summarise_at(vars(SimpleVaxStatus_Num), list(counts=length, AvVax_perCap=mean)) -> mydata4map
+
+
+mydata4map
+
+library(dplyr)
+
+# merge data into map ----------------------------------------------------------
+
+myMapVaxregion=merge(GitRegion_map,mydata4map,by.x='NAME',"Region")
+
+head(myMapVaxregion)
+library(classInt)
+# prepare plot
+
+basemapregion = ggplot(myMapVaxregion) + 
+  geom_sf(aes(fill=AvVax_perCap)) + 
+  scale_fill_viridis_c(direction = -1, labels = c("No plans", "Not sure", "Plan to", "Received")) +
+  labs (x="", y="", fill = "Average Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") + 
+  ggtitle("Adoption of 2023-2024 COVID-19 Vaccine", subtitle = "Average Vaccination Level by Region")
+
+basemapregion
+
+# save del4Draft ----------------------------------------------------------
+saveRDS(basemapregion, file = "RegionVaxMap.rds")
+
+
+
+
+
+
+############Region From GeoJson##################
+
+region_map=sf::read_sf("cb_2022_us_region_500k2.json")
 head(region_map)
 head(mydata)
 
@@ -269,7 +321,7 @@ library(rnaturalearthdata)
 world <- ne_countries(scale = "medium", returnclass = "sf")
 usa <- world[world$name == "United States, "]
 
-region_map2 = sf::read_sf("cb_2022_us_region_500k.shp")
+region_map2 = sf::read_sf("cb_2022_us_region_500k2.json")
 head(region_map2)
 
 st_crs(region_map2)
@@ -369,13 +421,13 @@ head(myMapVax)
 library(classInt)
 # prepare plot
 
-basemap = ggplot(myMapVax) + 
+basemapstate = ggplot(myMapVax) + 
   geom_sf(aes(fill=AvVax_perCap)) + 
   scale_fill_viridis_c(direction = -1, labels = c("No plans", "Not sure", "Plan to", "Received")) +
   labs (x="", y="", fill = "Average Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") + 
   ggtitle("Adoption of 2023-2024 COVID-19 Vaccine", subtitle = "Average Vaccination Level by Region")
 
-basemap
+basemapstate
 
 # save del4Draft ----------------------------------------------------------
-saveRDS(basemap, file = "VaxMap.rds")
+saveRDS(basemapstate, file = "VaxMapstate.rds")

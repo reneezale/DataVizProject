@@ -16,6 +16,7 @@ This dashboard showcases the results of a nationally representative survey field
 
 The main objective of my research was to understand how Americans feel about the current state of COVID-19 in the US, and how that might influence their perceptions and use of the newest COVID-19 vaccine, released in the Fall of 2023.  
 
+You can find the code and data for this dashboard here: https://github.com/reneezale/DataVizProject 
 
 
 ### Nearly half of US respondents have no plans to receive the updated 2023-2024 COVID-19 Vaccine.
