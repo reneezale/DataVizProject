@@ -1,0 +1,54 @@
+---
+title: "Adoption of the updated 2023-2024 COVID-19 Vaccine"
+#bibliography: testVisual.bib
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard) # always
+```
+
+## Intro {.sidebar}
+
+This dashboard showcases the results of a nationally representative survey fielded to 282 US residents as part of the Fall 2023 DACSS Survey Research Methods course. 
+
+The main objective of my research was to understand how Americans feel about the current state of COVID-19 in the US, and how that might influence their perceptions and use of the newest COVID-19 vaccine, released in the Fall of 2023.  
+
+You can find the code and data for this dashboard here: https://github.com/reneezale/DataVizProject 
+
+
+### Nearly half of US respondents have no plans to receive the updated 2023-2024 COVID-19 Vaccine.
+
+
+```{r}
+readRDS("VaxStatusBarChart.rds")
+```
+
+
+### The mean age of those who have received the updated COVID-19 vaccine is 52...
+
+```{r}
+readRDS("VaxAgeHistFinal.rds")
+```
+
+### ...While those who have no plans to receive the updated vaccine are slightly younger, with an average age of 47. 
+
+```{r}
+readRDS("VaxAgeHistFinalNoVax.rds")
+```
+
+### Respondents who identify as liberal are the most likely to have received the updated vaccine, while conservatives are the most likely to say they have no plans to receive it. 
+
+```{r}
+readRDS("StackedBar2.rds")
+```
+
+### Those in the West and Midwest are most receptive to the new vaccine, while those in the Northeast and South are more uncertain. 
+
+```{r}
+readRDS("RegionVaxMap.rds")
+```
+
+### References
