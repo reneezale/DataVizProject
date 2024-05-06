@@ -1,6 +1,8 @@
 ---
 title: "Adoption of the updated 2023-2024 COVID-19 Vaccine"
-#bibliography: testVisual.bib
+bibliography: My Library.bib
+
+
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
@@ -12,9 +14,9 @@ library(flexdashboard) # always
 
 ## Intro {.sidebar}
 
-This dashboard showcases the results of a nationally representative survey fielded to 282 US residents as part of the Fall 2023 DACSS Survey Research Methods course. 
+This dashboard showcases the results of a nationally representative survey fielded to 281 US residents as part of the Fall 2023 DACSS Survey Research Methods course. 
 
-The main objective of my research was to understand how Americans feel about the current state of COVID-19 in the US, and how that might influence their perceptions and use of the newest COVID-19 vaccine, released in the Fall of 2023.  
+The main objective of my research was to understand how Americans feel about the current state of COVID-19 in the US, and how that might influence their perceptions and use of the newest COVID-19 vaccine, released in the Fall of 2023 [@stapletonFall2023DACSS2023].  
 
 You can find the code and data for this dashboard here: https://github.com/reneezale/DataVizProject 
 
@@ -27,16 +29,10 @@ readRDS("VaxStatusBarChart.rds")
 ```
 
 
-### The mean age of those who have received the updated COVID-19 vaccine is 52...
+### Respondents vaccinated with the new COVID-19 vaccine are 7 years older, on average, than unvaccinated respondents. 
 
 ```{r}
-readRDS("VaxAgeHistFinal.rds")
-```
-
-### ...While those who have no plans to receive the updated vaccine are slightly younger, with an average age of 47. 
-
-```{r}
-readRDS("VaxAgeHistFinalNoVax.rds")
+readRDS("VaxAgeHistDuo2.rds")
 ```
 
 ### Respondents who identify as liberal are the most likely to have received the updated vaccine, while conservatives are the most likely to say they have no plans to receive it. 
@@ -45,10 +41,15 @@ readRDS("VaxAgeHistFinalNoVax.rds")
 readRDS("StackedBar2.rds")
 ```
 
-### Those in the West and Midwest are most receptive to the new vaccine, while those in the Northeast and South are more uncertain. 
+### Region does not appear to have as strong of a relationship to vaccination attitudes as political affiliation. There is no region that stands out as strongly for or against the vaccine.  
 
 ```{r}
 readRDS("RegionVaxMap.rds")
 ```
 
 ### References
+
+You can find the code and data for this dashboard here: https://github.com/reneezale/DataVizProject  
+
+Survey Data Source: @stapletonFall2023DACSS2023
+

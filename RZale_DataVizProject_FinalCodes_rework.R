@@ -58,7 +58,7 @@ vaxbase = ggplot(data = VaxtableFreq, aes(x = reorder(VaxStatus, VaxXAxisOrder),
   geom_bar(fill ="gray", stat = 'identity') + 
   geom_text(aes(label = paste(round(Percent), "%")), vjust = -0.5, size = 3) + 
   labs(x = "Vaccination Status", y = "Percent", caption = "Source: DACSS National Survey, Fall 2023") +
-  ggtitle("Vaccination Status with new COVID-19 Vaccine", subtitle = "Fall 2023") + 
+  ggtitle("Vaccination Status", subtitle = "2023-2024 COVID-19 Vaccine") + 
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
@@ -70,6 +70,7 @@ vaxbase
 # save vaxplot4 ----------------------------------------------------------
 saveRDS(vaxbase, file = "VaxStatusBarChart.rds")
 
+
 ######################Age Histogram VAXXED RESPONDENTS#########################
 barWIDTH=15
 library(ggplot2)
@@ -78,7 +79,7 @@ VaxedData <- filter(mydata, NewVaxstatus == "Received")
 y.AxisTextAge="Age"
 
 VaxtitleText='Age of Vaccinated Respondents'
-sub_titleText='Fall 2023'
+sub_titleText='2023-2024 COVID-19 Vaccine'
 sourceText='Source: DACSS National Survey, Fall 2023'
 
 AgeHistbase= ggplot(VaxedData)  
@@ -92,16 +93,15 @@ h1
 histy.AxisTextAge="Count of Vaccinated Respondents"
 histx.AxisTextAge="Age"
 
-VaxAgeHist = h1 + labs(title=VaxtitleText,
-                                    x = histx.AxisTextAge, 
-                       y = histy.AxisTextAge,
-                                    caption = sourceText) 
+VaxAgeHist = h1 + labs(title=VaxtitleText, x = histx.AxisTextAge, y = histy.AxisTextAge, caption = sourceText) 
 VaxAgeHist
+
+VaxAgeHist = VaxAgeHist + ggtitle("Age of Vaccinated Respondents", subtitle = "2023-2024 COVID-19 Vaccine")
+
 
 VaxAgeHist = VaxAgeHist + theme_minimal()
 
 VaxAgeHist
-
 
 #Adding in mean line and label
 mn=mean(VaxedData$age,na.rm = T)
@@ -122,54 +122,83 @@ VaxAgeHist
 saveRDS(VaxAgeHist, file = "VaxAgeHistFinal.rds")
 
 
-#########################AGE HISTOGRAM NO PLANS RESPONDENTS################ 
+
+######################Condolidated histogram code######################
+######################FACET WRAP HISTOGRAM#############################
 
 barWIDTH=15
 library(ggplot2)
+library(tidyr)
 
-VaxedData2 <- filter(mydata, NewVaxstatus == "No plans")
-y.AxisTextAge="Age"
+#relabeling Vaccination variable
 
-VaxtitleText='Age of Respondents with No Plans to Receive Updated Vaccine'
-sub_titleText='Fall 2023'
-sourceText='Source: DACSS National Survey, Fall 2023'
+mydata <- mutate(mydata, YNvaxStatus2 = recode(YNvaxStatus, 
+                                                          `Yes` = "Vaccinated", 
+                                                          `No` = "Unvaccinated"))
+####Making Mean Data
 
-AgeHistbase= ggplot(VaxedData2)  
-h1= AgeHistbase + geom_histogram(aes(x = age),
-                                 binwidth = barWIDTH,
-                                 color = "#000000",
-                                 fill= "gray45") 
-h1=h1 + labs(y="count")
-h1
+mydata$YNvaxStatus2F <- factor(mydata$YNvaxStatus2, levels=c('Vaccinated', 'Unvaccinated'))
+summary(mydata$YNvaxStatus2F)
 
-histy.AxisTextAge="Count of 'Vaccinate'No Plans' Respondents"
-histx.AxisTextAge="Age"
+df_mean <- mydata %>% 
+  group_by(YNvaxStatus2F) %>% 
+  summarise(Mean = mean(age)) %>% 
+  pivot_longer(Mean, names_to = "Statistics", values_to = "Value")
 
-VaxAgeHist2 = h1 + labs(title=VaxtitleText,
-                       x = histx.AxisTextAge, 
-                       y = histy.AxisTextAge,
-                       caption = sourceText) 
-VaxAgeHist2
+df_mean
 
-VaxAgeHist2 = VaxAgeHist2 + theme_minimal()
+####Making Chart######
 
-VaxAgeHist2
+AgeHistbase = ggplot(mydata) + 
+  geom_histogram(aes(x = age), binwidth = barWIDTH, color = "#000000", fill= "gray45") + 
+  labs(y="Count of Respondents", x="Age", caption = "Source: DACSS National Survey, Fall 2023") +
+  ggtitle("Age of Respondents by Vaccination Status", subtitle = "2023-2024 COVID-19 Vaccine") +
+  facet_wrap(~YNvaxStatus2F) +
+  geom_vline(data = df_mean, mapping = aes(xintercept = Value, color = Statistics), size = 1) +
+  geom_text(data = df_mean, aes(x = (Value + 24), label = (paste0('Mean Age: ',round(df_mean$Value))), y = 63), size=3) 
 
-#Adding in mean line and label
-mn2 =mean(VaxedData2$age,na.rm = T)
-txtMean2 =paste0('Mean Age: ',round(mn2))
-txtMean2
+AgeHistbase
 
-VaxAgeHist2 <- VaxAgeHist2 + geom_vline(xintercept = mn2,color='red') + 
-  annotate(geom = 'text',color='red',
-           label=txtMean2, # mean as text
-           y = 38,
-           x=mn2+10,
-           angle=0) 
-VaxAgeHist2
+# save Facet Wrap Histogram ----------------------------------------------------------
+saveRDS(AgeHistbase, file = "VaxAgeHistDuo.rds")
 
-# save del2Draft ----------------------------------------------------------
-saveRDS(VaxAgeHist2, file = "VaxAgeHistFinalNoVax.rds")
+########################################
+#Duo Histogram Attempt 2
+barWIDTH=15
+library(ggplot2)
+library(tidyr)
+
+#relabeling Vaccination variable
+
+mydata <- mutate(mydata, YNvaxStatus2 = recode(YNvaxStatus, 
+                                               `Yes` = "Vaccinated", 
+                                               `No` = "Unvaccinated"))
+####Making New Variable
+
+mydata$YNvaxStatus2F <- factor(mydata$YNvaxStatus2, levels=c('Vaccinated', 'Unvaccinated'))
+summary(mydata$YNvaxStatus2F)
+
+AgeHistbase2 = ggplot(mydata) + 
+  geom_histogram(aes(x = age), binwidth = barWIDTH, color = "#000000", fill= "gray45") + 
+  labs(y="Count of Respondents", x="Age", caption = "Source: DACSS National Survey, Fall 2023") +
+  ggtitle("Age of Respondents by Vaccination Status", subtitle = "2023-2024 COVID-19 Vaccine") +
+  facet_wrap(~YNvaxStatus2F) +
+  geom_vline(data = mydata %>% 
+               group_by(YNvaxStatus2F) %>%
+               summarise(Mean = mean(age)) %>% 
+               pivot_longer(Mean, names_to = "Statistics", values_to = "Value"), mapping = aes(xintercept = Value, color = Statistics), size = 1) + 
+  geom_text(data = mydata %>%
+              group_by(YNvaxStatus2F) %>% 
+              summarise(Mean = mean(age)) %>%
+              pivot_longer(Mean, names_to = "Statistics", values_to = "Value"), aes(x = (Value + 22), label = (paste0('Mean Age: ',round(Value))), y =  63))
+
+
+AgeHistbase2
+saveRDS(AgeHistbase2, file = "VaxAgeHistDuo2.rds")
+
+
+
+
 
 # deliverable 3 Bivariate ----------------------------------------------------------
 #########################Stacked Bar Chart#############################
@@ -206,7 +235,7 @@ stackedbase = ggplot(data=VaxedByPoliticsDF,aes(x= PoliticalAffiliationF, y=pctC
   geom_text(aes(label = paste(round((pctCol*100), 0), "%")), position = position_stack(vjust = 0.5)) + ####Labels showing incorrectly
   scale_y_continuous(labels = scales::percent) +
   labs(x = "Political Affiliation", y = "", fill = "Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") +
-  ggtitle("Politics and Vaccination Plans", subtitle = "New COVID-19 Vaccination Status by Political Affiliation") 
+  ggtitle("Vaccination Plans by Political Affiliation", subtitle = "2023-2024 COVID-19 Vaccine") 
 
 stackedbase
 
@@ -250,16 +279,57 @@ head(myMapVaxregion)
 library(classInt)
 # prepare plot
 
+#basemapregion = ggplot(myMapVaxregion) + 
+  #geom_sf(aes(fill=AvVax_perCap)) + 
+  #scale_fill_viridis_c(direction = -1, labels = c("No plans", "Not sure", "Plan to", "Received")) +
+  #labs (x="", y="", fill = "Average Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") + 
+  #ggtitle("Average Vaccination Level by US Region", subtitle = "2023-2024 COVID-19 Vaccine")
+
+#basemapregion
+
+numberOfClasses <- 4
+VarToCut <- myMapVaxregion$AvVax_perCap
+
+VaxIntervals <- classInt::classIntervals(VarToCut, numberOfClasses,
+                                         style = "jenks",
+                                         dataPrecision=2)
+
+myMapVaxregion$AvVax_perCap_cat=classInt::findCols(VaxIntervals,factor = T)
+
+newNames=c("No plans","Not sure","Plan to","Received")
+
+myMapVaxregion$AvVax_perCap_cat_labels = myMapVaxregion$AvVax_perCap_cat
+levels(myMapVaxregion$AvVax_perCap_cat_labels)=newNames
+
+
 basemapregion = ggplot(myMapVaxregion) + 
-  geom_sf(aes(fill=AvVax_perCap)) + 
-  scale_fill_viridis_c(direction = -1, labels = c("No plans", "Not sure", "Plan to", "Received")) +
+  geom_sf(aes(fill=AvVax_perCap_cat_labels)) + 
+  scale_fill_brewer(palette = "Spectral") +
   labs (x="", y="", fill = "Average Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") + 
-  ggtitle("Adoption of 2023-2024 COVID-19 Vaccine", subtitle = "Average Vaccination Level by Region")
+  ggtitle("Average Vaccination Level by US Region", subtitle = "2023-2024 COVID-19 Vaccine") +
+  coord_sf(crs = st_crs(2163)) 
 
 basemapregion
 
 # save del4Draft ----------------------------------------------------------
 saveRDS(basemapregion, file = "RegionVaxMap.rds")
+
+
+
+
+
+
+
+##############################ARCHIVED PAST CODES#####################################################
+
+
+region_map2=sf::read_sf("gz_2010_us_040_00_500k.json")
+head(region_map2)
+head(mydata)
+
+
+
+
 
 
 
@@ -377,7 +447,7 @@ basemapregion2 = ggplot(myMapVaxregion2) +
   geom_sf(aes(fill=AvVax_perCap)) + 
   scale_fill_viridis_c(direction = -1, labels = c("No plans", "Not sure", "Plan to", "Received")) +
   labs (x="", y="", fill = "Average Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") + 
-  ggtitle("Adoption of 2023-2024 COVID-19 Vaccine", subtitle = "Average Vaccination Level by Region")
+  ggtitle("Average Vaccination Level by US Region", subtitle = "2023-2024 COVID-19 Vaccine")
 
 basemapregion2
 
@@ -431,3 +501,93 @@ basemapstate
 
 # save del4Draft ----------------------------------------------------------
 saveRDS(basemapstate, file = "VaxMapstate.rds")
+
+
+#########################AGE HISTOGRAM NO PLANS RESPONDENTS################ 
+
+barWIDTH=15
+library(ggplot2)
+
+VaxedData2 <- filter(mydata, NewVaxstatus == "No plans")
+y.AxisTextAge="Age"
+
+VaxtitleText='Age of Respondents with No Plans to Receive Updated Vaccine'
+sub_titleText='Fall 2023'
+sourceText='Source: DACSS National Survey, Fall 2023'
+
+AgeHistbase= ggplot(VaxedData2)  
+h1= AgeHistbase + geom_histogram(aes(x = age),
+                                 binwidth = barWIDTH,
+                                 color = "#000000",
+                                 fill= "gray45") 
+h1=h1 + labs(y="count")
+h1
+
+histy.AxisTextAge="Count of 'Vaccinate'No Plans' Respondents"
+histx.AxisTextAge="Age"
+
+VaxAgeHist2 = h1 + labs(title=VaxtitleText,
+                        x = histx.AxisTextAge, 
+                        y = histy.AxisTextAge,
+                        caption = sourceText) 
+VaxAgeHist2
+
+VaxAgeHist2 = VaxAgeHist2 + ggtitle("Age of Respondents with No Plans to Receive Updated Vaccine", subtitle = "2023-2024 COVID-19 Vaccine")
+
+VaxAgeHist2 = VaxAgeHist2 + theme_minimal()
+
+VaxAgeHist2
+
+#Adding in mean line and label
+mn2 =mean(VaxedData2$age,na.rm = T)
+txtMean2 =paste0('Mean Age: ',round(mn2))
+txtMean2
+
+VaxAgeHist2 <- VaxAgeHist2 + geom_vline(xintercept = mn2,color='red') + 
+  annotate(geom = 'text',color='red',
+           label=txtMean2, # mean as text
+           y = 38,
+           x=mn2+10,
+           angle=0) 
+VaxAgeHist2
+
+# save del2Draft ----------------------------------------------------------
+saveRDS(VaxAgeHist2, file = "VaxAgeHistFinalNoVax.rds")
+
+
+head(mydata)
+
+(VaxedByRegion = table(mydata$SimpleVaxStatus,mydata$Region))
+library(magrittr) # for %>%
+(VaxedByRegionProp = (prop.table(VaxedByRegion,
+                                   margin = 2)%>%round(.,3)))
+
+VaxedByRegionDF = as.data.frame(VaxedByRegion)
+
+VaxedByRegionDF
+names(VaxedByRegionDF)=c("VaxStatus","Region","counts")
+VaxedByRegionDF$pctCol = as.data.frame(VaxedByRegionProp)[,3]
+VaxedByRegionDF
+
+#Reordering Political Affiliation Bar
+#VaxedByPoliticsDF$PoliticalAffiliationF <- factor(VaxedByPoliticsDF$PoliticalAffiliation, levels=c('Liberal', 'Moderate','Conservative','Not Sure'))
+#summary(VaxedByPoliticsDF$PoliticalAffiliationF)
+
+#summary(VaxedByPoliticsDF)
+
+#####Making Chart############
+library(scales)
+
+
+stackedbaseregion = ggplot(data= VaxedByRegionDF,aes(x= Region, y=pctCol, fill = VaxStatus, na.rm = TRUE)) + 
+  theme_minimal() +
+  geom_bar(stat = "identity", position = 'stack') +
+  geom_text(aes(label = paste(round((pctCol*100), 0), "%")), position = position_stack(vjust = 0.5)) + ####Labels showing incorrectly
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Political Affiliation", y = "", fill = "Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") +
+  ggtitle("Vaccination Plans by Political Affiliation", subtitle = "2023-2024 COVID-19 Vaccine") 
+
+stackedbaseregion
+
+# save del3Draft ----------------------------------------------------------
+saveRDS(stackedbaseregion, file = "StackedBarRegion.rds")
