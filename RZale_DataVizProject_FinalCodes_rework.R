@@ -10,6 +10,7 @@ library(dplyr)
 
 mydata = read.csv("Survey.csv")
 
+mydata = read.csv("https://raw.githubusercontent.com/reneezale/DataVizProject/main/Survey.csv")
 
 # see data ----------------------------------------------------------
 
@@ -71,96 +72,11 @@ vaxbase
 saveRDS(vaxbase, file = "VaxStatusBarChart.rds")
 
 
-######################Age Histogram VAXXED RESPONDENTS#########################
-barWIDTH=15
-library(ggplot2)
-
-VaxedData <- filter(mydata, NewVaxstatus == "Received")
-y.AxisTextAge="Age"
-
-VaxtitleText='Age of Vaccinated Respondents'
-sub_titleText='2023-2024 COVID-19 Vaccine'
-sourceText='Source: DACSS National Survey, Fall 2023'
-
-AgeHistbase= ggplot(VaxedData)  
-h1= AgeHistbase + geom_histogram(aes(x = age),
-                          binwidth = barWIDTH,
-                          color = "#000000",
-                            fill= "gray45") 
-h1=h1 + labs(y="count")
-h1
-
-histy.AxisTextAge="Count of Vaccinated Respondents"
-histx.AxisTextAge="Age"
-
-VaxAgeHist = h1 + labs(title=VaxtitleText, x = histx.AxisTextAge, y = histy.AxisTextAge, caption = sourceText) 
-VaxAgeHist
-
-VaxAgeHist = VaxAgeHist + ggtitle("Age of Vaccinated Respondents", subtitle = "2023-2024 COVID-19 Vaccine")
-
-
-VaxAgeHist = VaxAgeHist + theme_minimal()
-
-VaxAgeHist
-
-#Adding in mean line and label
-mn=mean(VaxedData$age,na.rm = T)
-txtMean=paste0('Mean Age: ',round(mn))
-txtMean
-
-VaxAgeHist <- VaxAgeHist + geom_vline(xintercept = mn,color='red') + 
-  annotate(geom = 'text',color='red',
-           label=txtMean, # mean as text
-           y = 19,
-           x=mn+10,
-           angle=0) 
-VaxAgeHist
-
-
-
-# save del2Draft ----------------------------------------------------------
-saveRDS(VaxAgeHist, file = "VaxAgeHistFinal.rds")
 
 
 
 ######################Condolidated histogram code######################
-######################FACET WRAP HISTOGRAM#############################
 
-barWIDTH=15
-library(ggplot2)
-library(tidyr)
-
-#relabeling Vaccination variable
-
-mydata <- mutate(mydata, YNvaxStatus2 = recode(YNvaxStatus, 
-                                                          `Yes` = "Vaccinated", 
-                                                          `No` = "Unvaccinated"))
-####Making Mean Data
-
-mydata$YNvaxStatus2F <- factor(mydata$YNvaxStatus2, levels=c('Vaccinated', 'Unvaccinated'))
-summary(mydata$YNvaxStatus2F)
-
-df_mean <- mydata %>% 
-  group_by(YNvaxStatus2F) %>% 
-  summarise(Mean = mean(age)) %>% 
-  pivot_longer(Mean, names_to = "Statistics", values_to = "Value")
-
-df_mean
-
-####Making Chart######
-
-AgeHistbase = ggplot(mydata) + 
-  geom_histogram(aes(x = age), binwidth = barWIDTH, color = "#000000", fill= "gray45") + 
-  labs(y="Count of Respondents", x="Age", caption = "Source: DACSS National Survey, Fall 2023") +
-  ggtitle("Age of Respondents by Vaccination Status", subtitle = "2023-2024 COVID-19 Vaccine") +
-  facet_wrap(~YNvaxStatus2F) +
-  geom_vline(data = df_mean, mapping = aes(xintercept = Value, color = Statistics), size = 1) +
-  geom_text(data = df_mean, aes(x = (Value + 24), label = (paste0('Mean Age: ',round(df_mean$Value))), y = 63), size=3) 
-
-AgeHistbase
-
-# save Facet Wrap Histogram ----------------------------------------------------------
-saveRDS(AgeHistbase, file = "VaxAgeHistDuo.rds")
 
 ########################################
 #Duo Histogram Attempt 2
@@ -217,9 +133,6 @@ names(VaxedByPoliticsDF)=c("VaxStatus","PoliticalAffiliation","counts")
 VaxedByPoliticsDF$pctCol = as.data.frame(VaxedByPoliticsProp)[,3]
 VaxedByPoliticsDF
 
-
-
-
 #Reordering Political Affiliation Bar
 VaxedByPoliticsDF$PoliticalAffiliationF <- factor(VaxedByPoliticsDF$PoliticalAffiliation, levels=c('Liberal', 'Moderate','Conservative','Not Sure'))
 summary(VaxedByPoliticsDF$PoliticalAffiliationF)
@@ -235,9 +148,11 @@ stackedbase = ggplot(data=VaxedByPoliticsDF,aes(x= PoliticalAffiliationF, y=pctC
   geom_text(aes(label = paste(round((pctCol*100), 0), "%")), position = position_stack(vjust = 0.5)) + ####Labels showing incorrectly
   scale_y_continuous(labels = scales::percent) +
   labs(x = "Political Affiliation", y = "", fill = "Vaccination Status", caption = "Source: DACSS National Survey, Fall 2023") +
-  ggtitle("Vaccination Plans by Political Affiliation", subtitle = "2023-2024 COVID-19 Vaccine") 
+  ggtitle("Vaccination Plans by Political Affiliation", subtitle = "2023-2024 COVID-19 Vaccine") +
+  scale_fill_brewer(palette="Blues")
 
 stackedbase
+
 
 # save del3Draft ----------------------------------------------------------
 saveRDS(stackedbase, file = "StackedBar2.rds")
@@ -315,25 +230,16 @@ basemapregion
 saveRDS(basemapregion, file = "RegionVaxMap.rds")
 
 
-
-
+#####################################################################################
+#####################################################################################
+#####################################################################################
+#####################################################################################
+#####################################################################################
+#####################################################################################
 
 
 
 ##############################ARCHIVED PAST CODES#####################################################
-
-
-region_map2=sf::read_sf("gz_2010_us_040_00_500k.json")
-head(region_map2)
-head(mydata)
-
-
-
-
-
-
-
-
 
 
 ############Region From GeoJson##################
@@ -591,3 +497,91 @@ stackedbaseregion
 
 # save del3Draft ----------------------------------------------------------
 saveRDS(stackedbaseregion, file = "StackedBarRegion.rds")
+
+######################Age Histogram VAXXED RESPONDENTS#########################
+barWIDTH=15
+library(ggplot2)
+
+VaxedData <- filter(mydata, NewVaxstatus == "Received")
+y.AxisTextAge="Age"
+
+VaxtitleText='Age of Vaccinated Respondents'
+sub_titleText='2023-2024 COVID-19 Vaccine'
+sourceText='Source: DACSS National Survey, Fall 2023'
+
+AgeHistbase= ggplot(VaxedData)  
+h1= AgeHistbase + geom_histogram(aes(x = age),
+                                 binwidth = barWIDTH,
+                                 color = "#000000",
+                                 fill= "gray45") 
+h1=h1 + labs(y="count")
+h1
+
+histy.AxisTextAge="Count of Vaccinated Respondents"
+histx.AxisTextAge="Age"
+
+VaxAgeHist = h1 + labs(title=VaxtitleText, x = histx.AxisTextAge, y = histy.AxisTextAge, caption = sourceText) 
+VaxAgeHist
+
+VaxAgeHist = VaxAgeHist + ggtitle("Age of Vaccinated Respondents", subtitle = "2023-2024 COVID-19 Vaccine")
+
+
+VaxAgeHist = VaxAgeHist + theme_minimal()
+
+VaxAgeHist
+
+#Adding in mean line and label
+mn=mean(VaxedData$age,na.rm = T)
+txtMean=paste0('Mean Age: ',round(mn))
+txtMean
+
+VaxAgeHist <- VaxAgeHist + geom_vline(xintercept = mn,color='red') + 
+  annotate(geom = 'text',color='red',
+           label=txtMean, # mean as text
+           y = 19,
+           x=mn+10,
+           angle=0) 
+VaxAgeHist
+
+
+
+# save del2Draft ----------------------------------------------------------
+saveRDS(VaxAgeHist, file = "VaxAgeHistFinal.rds")
+
+######################FACET WRAP HISTOGRAM#############################
+
+barWIDTH=15
+library(ggplot2)
+library(tidyr)
+
+#relabeling Vaccination variable
+
+mydata <- mutate(mydata, YNvaxStatus2 = recode(YNvaxStatus, 
+                                               `Yes` = "Vaccinated", 
+                                               `No` = "Unvaccinated"))
+####Making Mean Data
+
+mydata$YNvaxStatus2F <- factor(mydata$YNvaxStatus2, levels=c('Vaccinated', 'Unvaccinated'))
+summary(mydata$YNvaxStatus2F)
+
+df_mean <- mydata %>% 
+  group_by(YNvaxStatus2F) %>% 
+  summarise(Mean = mean(age)) %>% 
+  pivot_longer(Mean, names_to = "Statistics", values_to = "Value")
+
+df_mean
+
+####Making Chart######
+
+AgeHistbase = ggplot(mydata) + 
+  geom_histogram(aes(x = age), binwidth = barWIDTH, color = "#000000", fill= "gray45") + 
+  labs(y="Count of Respondents", x="Age", caption = "Source: DACSS National Survey, Fall 2023") +
+  ggtitle("Age of Respondents by Vaccination Status", subtitle = "2023-2024 COVID-19 Vaccine") +
+  facet_wrap(~YNvaxStatus2F) +
+  geom_vline(data = df_mean, mapping = aes(xintercept = Value, color = Statistics), size = 1) +
+  geom_text(data = df_mean, aes(x = (Value + 24), label = (paste0('Mean Age: ',round(df_mean$Value))), y = 63), size=3) 
+
+AgeHistbase
+
+# save Facet Wrap Histogram ----------------------------------------------------------
+saveRDS(AgeHistbase, file = "VaxAgeHistDuo.rds")
